@@ -93,6 +93,8 @@ public class ShortestPathPlugin extends Plugin
 	private static final int POH_MAX_Y = 5767;
 	private static final String PLUGIN_MESSAGE_PATH = "path";
 	private static final String PLUGIN_MESSAGE_CLEAR = "clear";
+	private static final String PLUGIN_MESSAGE_GET_TARGET = "getTarget";
+	private static final String PLUGIN_MESSAGE_TARGETS = "targets";
 	private static final String PLUGIN_MESSAGE_START = "start";
 	private static final String PLUGIN_MESSAGE_TARGET = "target";
 	private static final String PLUGIN_MESSAGE_CONFIG_OVERRIDE = "config";
@@ -599,6 +601,20 @@ public class ShortestPathPlugin extends Plugin
 			configOverride.clear();
 			cacheConfigValues();
 			setTarget(WorldPointUtil.UNDEFINED);
+		}
+		else if (PLUGIN_MESSAGE_GET_TARGET.equals(action))
+		{
+			Set<Integer> targets = new HashSet<>();
+			synchronized (pathfinderMutex)
+			{
+				if (pathfinder != null)
+				{
+					targets.addAll(pathfinder.getTargets());
+				}
+			}
+			Map<String, Object> reply = new HashMap<>();
+			reply.put(PLUGIN_MESSAGE_TARGETS, targets);
+			eventBus.post(new PluginMessage(CONFIG_GROUP, PLUGIN_MESSAGE_TARGETS, reply));
 		}
 	}
 
